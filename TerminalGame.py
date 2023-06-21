@@ -2,7 +2,7 @@
 # Sam Armitage
 # Started 20/06/23
 
-# Import libs
+# Import libraries
 import random
 import time
 
@@ -108,10 +108,10 @@ class Item:
         return self.name
     
     def item_info(self):
-        print(f"\n{self.name} is a level {self.level_required} item, which could heal you by {self.heal_amount}. \n\nGeneral Description:\n{self.description}.")
+        print(f"\n{self.name} is a level {self.level_required} item, which could heal you by {self.heal_amount}. \n\nGeneral Description:\n{self.description}")
 
 # Item creation & Enemy Names List
-stew1 = Item("Suspicious Stew", 0, 5, "An odd smell looms, I am not sure if I should try this",0.6)
+stew1 = Item("Suspicious Stew", 0, 5, "An odd smell looms, I am not sure if I should try this.",0.6)
 stew2 = Item("Suspicious Stew (2)", 0 , 3, "This doesnt smell too bad, maybe give it a go?", 0.1)
 stew3 = Item("Suspicious Stew (3)", 2 , 5, "Smells like roses... hmmm...", 0.5)
 pie = Item("Pie", 1, 2, "Just like mum used to make!")
@@ -126,11 +126,11 @@ def game_type_gen(player):
     if player.level < 1:
         return 1
     elif player.level <= 5:
-        return random.randint(1,2)
-    elif player.level > 12:
-        return 4 # This is going to relate to the 'boss' fight to end the game
-    else:
         return random.randint(1,3)
+    elif player.level > 12:
+        return 5 # This is going to relate to the 'boss' fight to end the game
+    else:
+        return random.randint(1,4)
     
 # Have a turn function
 sleep_timer = 1
@@ -147,7 +147,7 @@ def player_move(player):
         print(f"\n{enemy_encountered} attacks you! Game type: {enemy_game}. Exp: {enemy_exp}.")
         player_win = False
         
-        if enemy_game == 1: # 3 Guesses for higher or lower
+        if enemy_game == 1 or enemy_game == 2: # 3 Guesses for higher or lower
             print(f"{enemy_encountered} gives you 5 chances to guess their magic number between 0 and 50.")
             counter = 0
             computer_number = random.randint(0,50)
@@ -163,7 +163,7 @@ def player_move(player):
                 else:
                     print("\nLower...")
         
-        elif enemy_game == 2: # Win one game of rock paper scissors?
+        elif enemy_game == 3: # Win one game of rock paper scissors?
             print(f"\n{enemy_encountered} challenges you to a game of rock, paper, scissors,")
             outcome = False
             r_p_s_list = ['r','p','s']
@@ -191,9 +191,19 @@ def player_move(player):
                     player_win = False
                     outcome = True
 
-        elif enemy_game == 3: # Single guess the number, the distance off deals that much damage
-            pass
-        elif enemy_game == 4: # 
+        elif enemy_game == 4: # Single guess the number, the distance off deals that much damage
+            print("\nFor something a bit more interesting... I am thinking of a number 1 to 10, guess it correctly and I will heal you. Guess wrong and you will take damage respective to how far off you were!")
+            computer_number = random.randint(1,10)
+            player_game_number = int(input("\nWhat would you like to guess...?\n"))
+            if player_game_number == computer_number:
+                print("\nYou guessed correctly... How!")
+                player_win = True
+                enemy_exp = enemy_exp*3
+            else:
+                print(f"\nI was thinking of {computer_number}, which means you take {abs(computer_number-player_game_number)} damage!")
+                enemy_exp = abs(computer_number-player_game_number)
+
+        elif enemy_game == 5: # 
             pass
         else:
             print("Error, game not found.")
@@ -263,6 +273,7 @@ while toggle_play == True:
             print("\nYou cannot heal, as you already have max health!")
 
     elif player_inp == 5: # End Game
+        print("\nThanks for playing!")
         toggle_play = False
 
     else:
