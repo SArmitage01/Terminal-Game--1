@@ -119,7 +119,7 @@ apple = Item("Apple", 0 , 1, "Ripe and tasty!")
 feast = Item("Delicious Feast", 0 , 10, "I dont think it gets better than this!")
 item_list = [stew1,stew2,stew3,pie,pie,pie,pie,apple,apple,apple,apple,feast,feast,feast] # Multiple Instances balances the game (ie not many stew's given)
 
-enemy_names = ["Goblin", "Zombie", "Currupt Villager", "Dwarf", "Bear", "Witch", "Wizard"]
+enemy_names = ["Goblin", "Zombie", "Corrupt Villager", "Dwarf", "Bear", "Witch", "Wizard"]
 
 # Randomly select which mini-game to play as the 'fight'
 def game_type_gen(player):
@@ -144,7 +144,8 @@ def player_move(player):
         enemy_encountered = enemy_names[random.randint(0,len(enemy_names)-1)]
         enemy_game = game_type_gen(player)
         enemy_exp = (player.level+1)*random.randint(1,5)
-        print(f"\nA {enemy_encountered} attacks you! Game type: {enemy_game}. Exp: {enemy_exp}.")
+        if enemy_game != 5:
+            print(f"\nA {enemy_encountered} attacks you!")
         player_win = False
         
         if enemy_game == 1 or enemy_game == 2: # 3 Guesses for higher or lower
@@ -203,9 +204,8 @@ def player_move(player):
                 print(f"\nI was thinking of {computer_number}, which means you take {abs(computer_number-player_game_number)} damage!")
                 enemy_exp = abs(computer_number-player_game_number)
 
-        elif enemy_game == 5: # End game
-            # Need to add 'boss game' here!
-            print("Well done, you have completed the game!")
+        elif enemy_game == 5: # End game!
+            print(f"Well done {player.name}, you have completed the game!")
             quit()
         else:
             print("Error, game not found.")
@@ -213,27 +213,32 @@ def player_move(player):
         if player_win == True:
             player.give_exp(enemy_exp)
         else:
-            player.self_damage(enemy_exp) # Used this, as it scales as a player progresses
-            print(f"\nYou have taken {enemy_exp} damage! You have {player.health}/{player.max_health} health left!")
+            player.self_damage(round(min(enemy_exp, player.max_health/2))) # Used this, as it scales as a player progresses
+            print(f"\nYou have taken {round(min(enemy_exp, player.max_health/2))} damage! You have {player.health}/{player.max_health} health left!")
 
     else:
-        random_item = item_list[random.randint(0,len(item_list)-1)]
-        player.give_item(random_item)
-        print(f"\nIt's your lucky day, you found a {random_item}!")
+        if len(item_list) != 0:
+            random_item = item_list[random.randint(0,len(item_list)-1)]
+            player.give_item(random_item)
+            print(f"\nIt's your lucky day, you found a {random_item}!")
+        else:
+            player.self_damage(round(player.max_health/2))
+            print("\nYou find an empty chest, it looks like theres a small wire connected to it?")
+            time.sleep(sleep_timer)
+            print(f"\nAn arrow just hit you on the leg, you have taken {round(player.max_health/2)} damage. You have {player.health} health left!")
+
 
 ## Main Section
 # Get player name and create class instance
 print("Hello and welcome to the Terminal choice based game...")
 player_name = input("\nWhat is your name?\n")
 player_save = Player(player_name)
-player_save.give_item(apple)
-player_save.give_item(apple)
 
 # Start of main game
 toggle_play = True
 while toggle_play == True:
     print("\nWhat would you like to do?")
-    print("1: Make a turn")
+    print("1: Play a turn")
     print("2: See a player status")
     print("3: See your inventory")
     print("4: Use an item")
