@@ -46,7 +46,7 @@ class Player:
     def give_exp(self, exp_to_give):
         self.exp += exp_to_give
         self.level = round(self.exp/10)
-        self.max_health = 10 + self.level
+        self.max_health = 10 + self.level*2
 
     def self_damage(self, damage_amount):
         self.health -= damage_amount
@@ -116,10 +116,10 @@ stew2 = Item("Suspicious Stew (2)", 0 , 3, "This doesnt smell too bad, maybe giv
 stew3 = Item("Suspicious Stew (3)", 2 , 5, "Smells like roses... hmmm...", 0.5)
 pie = Item("Pie", 1, 2, "Just like mum used to make!")
 apple = Item("Apple", 0 , 1, "Ripe and tasty!")
-feast = Item("Delicious Feast", 0 , 5, "I dont think it gets better than this!")
+feast = Item("Delicious Feast", 0 , 10, "I dont think it gets better than this!")
 item_list = [stew1,stew2,stew3,pie,pie,pie,pie,apple,apple,apple,apple,feast,feast,feast] # Multiple Instances balances the game (ie not many stew's given)
 
-enemy_names = ["Goblin", "Zombie", "Angry Villager", "Dwarf", "Bear", "Witch", "Wizard"]
+enemy_names = ["Goblin", "Zombie", "Currupt Villager", "Dwarf", "Bear", "Witch", "Wizard"]
 
 # Randomly select which mini-game to play as the 'fight'
 def game_type_gen(player):
@@ -144,7 +144,7 @@ def player_move(player):
         enemy_encountered = enemy_names[random.randint(0,len(enemy_names)-1)]
         enemy_game = game_type_gen(player)
         enemy_exp = (player.level+1)*random.randint(1,5)
-        print(f"\n{enemy_encountered} attacks you! Game type: {enemy_game}. Exp: {enemy_exp}.")
+        print(f"\nA {enemy_encountered} attacks you! Game type: {enemy_game}. Exp: {enemy_exp}.")
         player_win = False
         
         if enemy_game == 1 or enemy_game == 2: # 3 Guesses for higher or lower
@@ -192,8 +192,8 @@ def player_move(player):
                     outcome = True
 
         elif enemy_game == 4: # Single guess the number, the distance off deals that much damage
-            print("\nFor something a bit more interesting... I am thinking of a number 1 to 10, guess it correctly and I will heal you. Guess wrong and you will take damage respective to how far off you were!")
-            computer_number = random.randint(1,10)
+            print("\nFor something a bit more interesting... I am thinking of a number 1 to 5, guess it correctly and I will heal you. Guess wrong and you will take damage respective to how far off you were!")
+            computer_number = random.randint(1,5)
             player_game_number = int(input("\nWhat would you like to guess...?\n"))
             if player_game_number == computer_number:
                 print("\nYou guessed correctly... How!")
@@ -203,8 +203,10 @@ def player_move(player):
                 print(f"\nI was thinking of {computer_number}, which means you take {abs(computer_number-player_game_number)} damage!")
                 enemy_exp = abs(computer_number-player_game_number)
 
-        elif enemy_game == 5: # 
-            pass
+        elif enemy_game == 5: # End game
+            # Need to add 'boss game' here!
+            print("Well done, you have completed the game!")
+            quit()
         else:
             print("Error, game not found.")
 
@@ -214,7 +216,6 @@ def player_move(player):
             player.self_damage(enemy_exp) # Used this, as it scales as a player progresses
             print(f"\nYou have taken {enemy_exp} damage! You have {player.health}/{player.max_health} health left!")
 
-
     else:
         random_item = item_list[random.randint(0,len(item_list)-1)]
         player.give_item(random_item)
@@ -223,8 +224,7 @@ def player_move(player):
 ## Main Section
 # Get player name and create class instance
 print("Hello and welcome to the Terminal choice based game...")
-#player_name = input("\nWhat is your name?\n")
-player_name = "Sam"
+player_name = input("\nWhat is your name?\n")
 player_save = Player(player_name)
 player_save.give_item(apple)
 player_save.give_item(apple)
